@@ -4,172 +4,191 @@
     <meta charset="UTF-8">
     <title>Auto Loading Ads</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Monetag SDK -->
-    <script src="//libtl.com/sdk.js?z=9597922" data-zone="9597922" async></script>
+    <!-- Monetag Ad Script -->
+    <script src='//libtl.com/sdk.js' data-zone='9597922' data-sdk='show_9597922'></script>
     <style>
-        body { 
-            font-family: 'Segoe UI', Arial, sans-serif; 
-            background: linear-gradient(135deg, #e0e7ff 0%, #f0fdfa 100%);
-            margin: 0; 
-            padding: 0; 
+        body {
+            background: linear-gradient(135deg, #232526, #414345);
+            color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
             min-height: 100vh;
         }
         .container {
             max-width: 400px;
-            margin: 50px auto;
-            background: #fff;
+            margin: 40px auto;
+            background: rgba(30, 30, 30, 0.95);
             border-radius: 18px;
-            box-shadow: 0 8px 32px rgba(44, 62, 80, 0.12);
-            padding: 35px 25px 30px 25px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            padding: 32px 24px 24px 24px;
             text-align: center;
         }
-        h2 { 
-            color: #2563eb; 
-            margin-bottom: 8px;
-            font-size: 2rem;
+        h1 {
+            font-size: 2.1rem;
+            margin-bottom: 10px;
             letter-spacing: 1px;
+            color: #00e6d0;
         }
-        .dev {
+        .dev-link {
             margin-bottom: 18px;
-            font-size: 16px;
-            color: #555;
+            font-size: 1.1rem;
         }
-        .dev a {
-            color: #2563eb;
+        .dev-link a {
+            color: #ffb347;
             text-decoration: none;
             font-weight: bold;
             transition: color 0.2s;
         }
-        .dev a:hover {
-            color: #0ea5e9;
+        .dev-link a:hover {
+            color: #00e6d0;
         }
-        .counter {
-            font-size: 18px;
-            margin-bottom: 22px;
-            color: #222;
+        .ads-count {
+            margin: 18px 0 28px 0;
+            font-size: 1.2rem;
+            background: #222;
+            padding: 10px 0;
+            border-radius: 8px;
+            font-weight: 500;
+            letter-spacing: 1px;
         }
         .btn-group {
             display: flex;
             flex-direction: column;
-            gap: 13px;
-            margin-bottom: 10px;
+            gap: 15px;
         }
-        button {
-            padding: 13px;
-            font-size: 17px;
+        .btn {
+            padding: 13px 0;
             border: none;
             border-radius: 8px;
-            background: linear-gradient(90deg, #2563eb 60%, #0ea5e9 100%);
-            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
-            font-weight: 500;
-            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+            background: linear-gradient(90deg, #00e6d0 0%, #0072ff 100%);
+            color: #fff;
             transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
-        button:active {
-            background: linear-gradient(90deg, #0ea5e9 60%, #2563eb 100%);
-            transform: scale(0.98);
+        .btn:active {
+            transform: scale(0.97);
         }
-        button:disabled {
-            background: #b3c6ff;
-            cursor: not-allowed;
+        .btn.stop {
+            background: linear-gradient(90deg, #ff5858 0%, #f09819 100%);
         }
-        #ad-container {
-            margin: 18px 0 10px 0;
-            min-height: 60px;
-            background: #f1f5f9;
-            border-radius: 8px;
-            padding: 8px 0;
+        .ad-area {
+            margin: 30px 0 0 0;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        @media (max-width: 500px) {
-            .container { max-width: 98vw; padding: 18px 4vw 18px 4vw; }
-            h2 { font-size: 1.3rem; }
+        .timer {
+            margin-top: 10px;
+            font-size: 1.1rem;
+            color: #ffb347;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Auto Loading Ads</h2>
-        <div class="dev">
-            Developer by 
-            <a href="https://t.me/NOBIN_39" target="_blank">Md Nobin</a>
+        <h1>Auto Loading Ads</h1>
+        <div class="dev-link">
+            Developer by <a href="https://t.me/NOBIN_39" target="_blank">Md Nobin</a>
         </div>
-        <div class="counter">
-            Ads Watched: <span id="ads-count">0</span>
+        <div class="ads-count">
+            Ads Watched: <span id="adsWatched">0</span>
         </div>
-        <div id="ad-container"></div>
         <div class="btn-group">
-            <button onclick="showAd()" id="watch-btn" disabled>Ads Watch</button>
-            <button onclick="startAutoAds()" id="auto-btn" disabled>Auto Ads Watch</button>
-            <button onclick="stopAutoAds()" id="stop-btn" disabled>Stop Auto Ads</button>
+            <button class="btn" id="watchAdBtn">Ads Watch</button>
+            <button class="btn" id="autoWatchBtn">Auto Ads Watch</button>
+            <button class="btn stop" id="stopAutoBtn">Stop Auto Ads</button>
         </div>
-        <div style="font-size:13px;color:#888;margin-top:10px;">* Please wait a few seconds after page load for ads to be ready.</div>
+        <div class="ad-area" id="adArea">
+            <!-- Ad will be loaded here -->
+        </div>
+        <div class="timer" id="timer"></div>
     </div>
 
     <script>
-        let adsCount = 0;
-        let autoAdsTimeout = null;
-        let isAutoRunning = false;
-
-        function updateCounter() {
-            document.getElementById('ads-count').innerText = adsCount;
+        // Monetag ad code
+        function loadAd() {
+            // Remove previous ad
+            document.getElementById('adArea').innerHTML = '';
+            // Create ad script
+            let script = document.createElement('script');
+            script.src = '//libtl.com/sdk.js';
+            script.setAttribute('data-zone', '9597922');
+            script.setAttribute('data-sdk', 'show_9597922');
+            document.getElementById('adArea').appendChild(script);
         }
 
-        function showMonetagAd() {
-            // Monetag Rewarded Interstitial
-            if (window.Monetag && typeof window.Monetag.showRewardedInterstitial === "function") {
-                window.Monetag.showRewardedInterstitial();
-            } else if (window.Monetag && typeof window.Monetag.showRewardedPopup === "function") {
-                window.Monetag.showRewardedPopup();
-            } else {
-                alert("Ad not loaded yet. Please wait a few seconds and try again.");
-            }
+        // Ads watched count
+        let adsWatched = 0;
+        let autoInterval = null;
+        let timerInterval = null;
+        let timerEl = document.getElementById('timer');
+
+        function updateAdsWatched() {
+            document.getElementById('adsWatched').innerText = adsWatched;
         }
 
-        function showAd() {
-            showMonetagAd();
-            adsCount++;
-            updateCounter();
-        }
+        // Ads Watch button
+        document.getElementById('watchAdBtn').onclick = function() {
+            stopAutoAds();
+            loadAd();
+            adsWatched++;
+            updateAdsWatched();
+            showTimer(15);
+        };
 
-        function startAutoAds() {
-            if (isAutoRunning) return;
-            isAutoRunning = true;
-            document.getElementById('auto-btn').disabled = true;
-            document.getElementById('stop-btn').disabled = false;
-            document.getElementById('watch-btn').disabled = true;
+        // Auto Ads Watch button
+        document.getElementById('autoWatchBtn').onclick = function() {
+            stopAutoAds();
+            autoInterval = setInterval(() => {
+                loadAd();
+                adsWatched++;
+                updateAdsWatched();
+                showTimer(17);
+            }, 17000); // 17 seconds
+            // First ad immediately
+            loadAd();
+            adsWatched++;
+            updateAdsWatched();
+            showTimer(17);
+        };
 
-            function autoShow() {
-                showMonetagAd();
-                adsCount++;
-                updateCounter();
-                autoAdsTimeout = setTimeout(() => {
-                    setTimeout(() => {
-                        if (isAutoRunning) autoShow();
-                    }, 2000); // ২ সেকেন্ড বিরতি
-                }, 15000); // ১৫ সেকেন্ড এড দেখানো
-            }
-            autoShow();
-        }
+        // Stop Auto Ads button
+        document.getElementById('stopAutoBtn').onclick = function() {
+            stopAutoAds();
+        };
 
         function stopAutoAds() {
-            isAutoRunning = false;
-            document.getElementById('auto-btn').disabled = false;
-            document.getElementById('stop-btn').disabled = true;
-            document.getElementById('watch-btn').disabled = false;
-            clearTimeout(autoAdsTimeout);
+            if (autoInterval) {
+                clearInterval(autoInterval);
+                autoInterval = null;
+            }
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            timerEl.innerText = '';
         }
 
-        // Monetag SDK লোড হলে বাটন এনাবল
-        function enableButtonsIfReady() {
-            if (window.Monetag && (typeof window.Monetag.showRewardedInterstitial === "function" || typeof window.Monetag.showRewardedPopup === "function")) {
-                document.getElementById('watch-btn').disabled = false;
-                document.getElementById('auto-btn').disabled = false;
-            } else {
-                setTimeout(enableButtonsIfReady, 1000);
-            }
+        // Timer display
+        function showTimer(seconds) {
+            if (timerInterval) clearInterval(timerInterval);
+            let timeLeft = seconds;
+            timerEl.innerText = `Next ad in: ${timeLeft}s`;
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft > 0) {
+                    timerEl.innerText = `Next ad in: ${timeLeft}s`;
+                } else {
+                    timerEl.innerText = '';
+                    clearInterval(timerInterval);
+                }
+            }, 1000);
         }
-        enableButtonsIfReady();
     </script>
 </body>
 </html>
