@@ -75,12 +75,9 @@
         .btn.stop {
             background: linear-gradient(90deg, #ff5858 0%, #f09819 100%);
         }
-        .ad-area {
-            margin: 30px 0 0 0;
-            min-height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        #goHomeBtn {
+            display: none;
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -98,11 +95,16 @@
             <button class="btn" id="autoWatchBtn">Auto Ads Watch</button>
             <button class="btn stop" id="stopAutoBtn">Stop Auto Ads</button>
         </div>
+        <div id="goHomeBtn">
+            <button class="btn" onclick="goHome()">Go Home</button>
+        </div>
     </div>
 
     <script>
         let adsWatched = 0;
-        let autoInterval = null;
+        let autoAds = false;
+        let adTimeout = null;
+        let autoClickTimeout = null;
 
         function updateAdsWatched() {
             document.getElementById('adsWatched').innerText = adsWatched;
@@ -111,9 +113,19 @@
         function showAd() {
             if (typeof window.show_9597922 === "function") {
                 window.show_9597922();
+                // ১৫ সেকেন্ড পরে Go Home বাটন দেখাও
+                adTimeout = setTimeout(() => {
+                    document.getElementById('goHomeBtn').style.display = 'block';
+                }, 15000);
             } else {
                 alert("Ad is not ready yet. Please wait a few seconds and try again.");
             }
+        }
+
+        function goHome() {
+            document.getElementById('goHomeBtn').style.display = 'none';
+            // হোমে রিডাইরেক্ট (তুমি চাইলে অন্য পেইজে পাঠাতে পারো)
+            window.location.href = '/';
         }
 
         document.getElementById('watchAdBtn').onclick = function() {
@@ -125,15 +137,17 @@
 
         document.getElementById('autoWatchBtn').onclick = function() {
             stopAutoAds();
-            autoInterval = setInterval(() => {
-                showAd();
-                adsWatched++;
-                updateAdsWatched();
-            }, 17000); // 17 seconds
-            // First ad immediately
+            autoAds = true;
             showAd();
             adsWatched++;
             updateAdsWatched();
+
+            // ২ সেকেন্ড পরে আবার অটো ক্লিক (লুপ)
+            autoClickTimeout = setTimeout(() => {
+                if (autoAds) {
+                    document.getElementById('autoWatchBtn').click();
+                }
+            }, 2000);
         };
 
         document.getElementById('stopAutoBtn').onclick = function() {
@@ -141,11 +155,25 @@
         };
 
         function stopAutoAds() {
-            if (autoInterval) {
-                clearInterval(autoInterval);
-                autoInterval = null;
-            }
+            autoAds = false;
+            clearTimeout(adTimeout);
+            clearTimeout(autoClickTimeout);
+            document.getElementById('goHomeBtn').style.display = 'none';
         }
+
+        // Monetag SDK ইভেন্ট: এড ক্লোজ হলে আবার চালাও (Auto Ads Watch অন থাকলে)
+        window.onClose_9597922 = function() {
+            if (autoAds) {
+                setTimeout(() => {
+                    showAd();
+                    adsWatched++;
+                    updateAdsWatched();
+                }, 2000);
+            }
+            // Go Home বাটনও হাইড করে দাও
+            document.getElementById('goHomeBtn').style.display = 'none';
+            clearTimeout(adTimeout);
+        };
     </script>
 </body>
 </html>
