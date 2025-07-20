@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Auto Loading Ads</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Monetag Ad Script -->
+    <!-- Monetag SDK Script -->
     <script src='//libtl.com/sdk.js' data-zone='9597922' data-sdk='show_9597922'></script>
     <style>
         body {
@@ -82,11 +82,6 @@
             align-items: center;
             justify-content: center;
         }
-        .timer {
-            margin-top: 10px;
-            font-size: 1.1rem;
-            color: #ffb347;
-        }
     </style>
 </head>
 <body>
@@ -103,61 +98,44 @@
             <button class="btn" id="autoWatchBtn">Auto Ads Watch</button>
             <button class="btn stop" id="stopAutoBtn">Stop Auto Ads</button>
         </div>
-        <div class="ad-area" id="adArea">
-            <!-- Ad will be loaded here -->
-        </div>
-        <div class="timer" id="timer"></div>
     </div>
 
     <script>
-        // Monetag ad code
-        function loadAd() {
-            // Remove previous ad
-            document.getElementById('adArea').innerHTML = '';
-            // Create ad script
-            let script = document.createElement('script');
-            script.src = '//libtl.com/sdk.js';
-            script.setAttribute('data-zone', '9597922');
-            script.setAttribute('data-sdk', 'show_9597922');
-            document.getElementById('adArea').appendChild(script);
-        }
-
-        // Ads watched count
         let adsWatched = 0;
         let autoInterval = null;
-        let timerInterval = null;
-        let timerEl = document.getElementById('timer');
 
         function updateAdsWatched() {
             document.getElementById('adsWatched').innerText = adsWatched;
         }
 
-        // Ads Watch button
+        function showAd() {
+            if (typeof window.show_9597922 === "function") {
+                window.show_9597922();
+            } else {
+                alert("Ad is not ready yet. Please wait a few seconds and try again.");
+            }
+        }
+
         document.getElementById('watchAdBtn').onclick = function() {
             stopAutoAds();
-            loadAd();
+            showAd();
             adsWatched++;
             updateAdsWatched();
-            showTimer(15);
         };
 
-        // Auto Ads Watch button
         document.getElementById('autoWatchBtn').onclick = function() {
             stopAutoAds();
             autoInterval = setInterval(() => {
-                loadAd();
+                showAd();
                 adsWatched++;
                 updateAdsWatched();
-                showTimer(17);
             }, 17000); // 17 seconds
             // First ad immediately
-            loadAd();
+            showAd();
             adsWatched++;
             updateAdsWatched();
-            showTimer(17);
         };
 
-        // Stop Auto Ads button
         document.getElementById('stopAutoBtn').onclick = function() {
             stopAutoAds();
         };
@@ -167,27 +145,6 @@
                 clearInterval(autoInterval);
                 autoInterval = null;
             }
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-            timerEl.innerText = '';
-        }
-
-        // Timer display
-        function showTimer(seconds) {
-            if (timerInterval) clearInterval(timerInterval);
-            let timeLeft = seconds;
-            timerEl.innerText = `Next ad in: ${timeLeft}s`;
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                if (timeLeft > 0) {
-                    timerEl.innerText = `Next ad in: ${timeLeft}s`;
-                } else {
-                    timerEl.innerText = '';
-                    clearInterval(timerInterval);
-                }
-            }, 1000);
         }
     </script>
 </body>
